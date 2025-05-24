@@ -1,6 +1,6 @@
 {
   "name": "@tomrobak/tabber",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A powerful, customizable tabber component for Next.js 15 & React 19",
   "author": "Tom Robak <hello@tomrobak.com>",
   "license": "GPL-2.0",

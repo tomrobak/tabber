@@ -41,9 +41,9 @@ npm install react react-dom next class-variance-authority clsx tailwind-merge
 ## 📖 Quick Start
 
 ```tsx
-import { Tabber } from "@tomrobak/tabber"
+import { Tabber, type TabberItem } from "@tomrobak/tabber"
 
-const items = [
+const items: TabberItem[] = [
   {
     id: "tab-1",
     title: "Lightning Fast",
@@ -67,11 +67,55 @@ export default function MyComponent() {
       autoPlay={true}
       defaultDuration={5000}
       onActiveChange={(index, item) => {
-        console.log(`Active tab: ${item.title}`)
+        console.log(`Active tab: ${item?.title || 'Unknown'}`)
       }}
     />
   )
 }
+```
+
+## 📦 Package Exports
+
+This package uses **named exports** for better tree-shaking and explicit imports:
+
+```tsx
+// ✅ Correct - Named imports
+import { Tabber, type TabberItem, useTabber } from "@tomrobak/tabber"
+
+// ❌ Incorrect - No default export
+import Tabber from "@tomrobak/tabber"
+```
+
+### Available Exports
+
+| Export | Type | Description |
+|--------|------|-------------|
+| `Tabber` | Component | Main tabber component |
+| `useTabber` | Hook | Core tabber logic hook |
+| `TabberItem` | Type | TypeScript interface for tab items |
+| `TabberProps` | Type | TypeScript interface for component props |
+| `UseTabberOptions` | Type | TypeScript interface for hook options |
+
+### Callback Safety
+
+Callbacks may receive `undefined` values during initialization. Always use safe access patterns:
+
+```tsx
+<Tabber
+  items={items}
+  onActiveChange={(index, item) => {
+    // ✅ Safe - handle undefined item
+    console.log(`Tab ${index}: ${item?.title || 'Loading...'}`)
+  }}
+  onProgressChange={(progress, item) => {
+    // ✅ Safe - handle undefined item
+    console.log(`Progress: ${Math.round(progress * 100)}%${item ? ` on ${item.title}` : ''}`)
+  }}
+  onCycleComplete={() => {
+    // ✅ Always safe - no parameters
+    console.log('Cycle completed!')
+  }}
+/>
 ```
 
 ## 🎨 Styling & Customization
@@ -218,9 +262,9 @@ const renderContent = (item, isActive, index) => {
 | `size` | `"sm" \| "md" \| "lg"` | `"md"` | Component size |
 | `progressGradient` | `[string, string]` | `["#3b82f6", "#8b5cf6"]` | Progress bar gradient |
 | `tabAlignment` | `"start" \| "center" \| "end"` | `"center"` | Vertical tab alignment |
-| `onActiveChange` | `(index, item) => void` | `undefined` | Active tab change callback |
+| `onActiveChange` | `(index: number, item?: TabberItem) => void` | `undefined` | Active tab change callback (item may be undefined) |
 | `onCycleComplete` | `() => void` | `undefined` | Cycle completion callback |
-| `onProgressChange` | `(progress) => void` | `undefined` | Progress update callback |
+| `onProgressChange` | `(progress: number, item?: TabberItem) => void` | `undefined` | Progress update callback (item may be undefined) |
 
 ### Styling Props
 
@@ -253,7 +297,9 @@ interface TabberItem {
 ### E-commerce Product Features
 
 ```tsx
-const productFeatures = [
+import { Tabber, type TabberItem } from "@tomrobak/tabber"
+
+const productFeatures: TabberItem[] = [
   {
     id: "security",
     title: "Advanced Security",
@@ -284,7 +330,9 @@ const productFeatures = [
 ### SaaS Feature Showcase
 
 ```tsx
-const saasFeatures = [
+import { Tabber, type TabberItem } from "@tomrobak/tabber"
+
+const saasFeatures: TabberItem[] = [
   {
     id: "collaboration",
     title: "Team Collaboration", 
@@ -328,6 +376,8 @@ const renderSaasContent = (item) => {
 ## 📱 Responsive Design
 
 ```tsx
+import { Tabber, type TabberItem } from "@tomrobak/tabber"
+
 <div className="w-full">
   {/* Desktop */}
   <div className="hidden lg:block">
@@ -356,6 +406,8 @@ const renderSaasContent = (item) => {
 ## 🌗 Dark Mode Support
 
 ```tsx
+import { Tabber, type TabberItem } from "@tomrobak/tabber"
+
 <Tabber
   items={items}
   className="dark:bg-gray-800"
@@ -376,6 +428,9 @@ const renderSaasContent = (item) => {
 ### Controlled Component
 
 ```tsx
+import { useState } from "react"
+import { Tabber, type TabberItem } from "@tomrobak/tabber"
+
 const [activeIndex, setActiveIndex] = useState(0)
 const [isAutoPlay, setIsAutoPlay] = useState(true)
 
@@ -383,7 +438,10 @@ const [isAutoPlay, setIsAutoPlay] = useState(true)
   items={items}
   activeIndex={activeIndex}
   autoPlay={isAutoPlay}
-  onActiveChange={(index) => setActiveIndex(index)}
+  onActiveChange={(index, item) => {
+    setActiveIndex(index)
+    console.log(`Switched to: ${item?.title || 'Unknown'}`)
+  }}
   onCycleComplete={() => {
     // Handle cycle completion
     console.log("Cycle completed!")
